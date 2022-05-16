@@ -407,14 +407,14 @@ export function createElementAccPageHistoryTranc(account = null, status = false)
     const skelet = skeletonAccPageHistoryTranc();
     const arrayElTable = createElTableTransaction(account, 26, 0);
 
-    const countListElTable = account.transactions.length / 25;
+    const countListElTable = Math.floor(account.transactions.length / 25);
     let i = 1;
     let r = 10;
 
     function numBtn(i, r) {
       let arrayBtnControl = [];
 
-      for(i; i <= r; i++) {
+      for(i; i <= (countListElTable - 1); i++) {
         let x = el('button', i, {
           class: 'table-control-btn btn-table'
         });
@@ -464,6 +464,7 @@ export function createElementAccPageHistoryTranc(account = null, status = false)
     }), el('canvas', {
       class: 'graph-dinamic-balance',
       id: 'graph-dinamic-balance',
+      role: 'img',
     }));
 
     setChildren(skelet.graphDinamicTransaction, el('h2', 'Соотношение входящих исходящих транзакций', {
@@ -493,38 +494,63 @@ export function createElementAccPageHistoryTranc(account = null, status = false)
       class: 'acc__container-control'
     }, arrayBtnControl));
 
-    document.querySelector('.table-control-btn-onward').addEventListener('click', () => {
-      const contBtn = document.querySelector('.acc__container-control')
-      document.querySelectorAll('.table-control-btn').forEach((elem, index) => {
-        if(Number(elem.textContent) === countListElTable && index === 0) {
-          return
-        }
+    if (document.querySelector('.table-control-btn-onward')) {
+      document.querySelector('.table-control-btn-onward').addEventListener('click', () => {
+        const contBtn = document.querySelector('.acc__container-control')
+        document.querySelectorAll('.table-control-btn').forEach((elem, index) => {
+          if(Number(elem.textContent) === countListElTable && index === 0) {
+            return
+          }
 
-        if(Number(elem.textContent) <= countListElTable) {
-          elem.textContent = Number(elem.textContent) + 10;
-        } else {
-          elem.textContent = ''
-        }
+          if((Number(elem.textContent) + 10) <= (countListElTable - 1)) {
+            if (elem.textContent < 10) {
+              elem.textContent = Number(elem.textContent) + 9;
+            } else {
+              elem.textContent = Number(elem.textContent) + 9;
+            }
 
+          } else {
+            elem.textContent = ''
+            document.querySelector('.table-control-btn-onward').style.display = 'none';
+          }
 
-        if(elem.textContent != 1 && index === 0 && !document.querySelector('.table-control-btn-back')) {
-          const btn = el('button', '<', {
-            class: 'table-control-btn-back btn-table'
-          });
-          contBtn.prepend(btn);
-
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('.table-control-btn').forEach((elem, index) => {
-              if(elem.textContent == 11 && index === 0) {
-                btn.remove();
-              }
-
-              elem.textContent = Number(elem.textContent) - 10;
+          if(elem.textContent != 1 && index === 0 && !document.querySelector('.table-control-btn-back')) {
+            const btn = el('button', '<', {
+              class: 'table-control-btn-back btn-table'
             });
-          })
-        }
+            contBtn.prepend(btn);
+
+            btn.addEventListener('click', () => {
+              let valueFirstEl = null;
+              let count = 9;
+              document.querySelectorAll('.table-control-btn').forEach((elem, index) => {
+                if (index === 0) {
+                  valueFirstEl = elem.textContent
+                }
+                if(elem.textContent == 11 && index === 0) {
+                  btn.remove();
+                }
+
+                elem.textContent = valueFirstEl - count;
+
+                if (elem.textContent == 1) {
+                  btn.style.display = 'none';
+                }
+
+                --count
+              });
+              document.querySelector('.table-control-btn-onward').style.display = 'block';
+            })
+          }
+        });
+
+        if (document.querySelector('.table-control-btn-back')) {
+          document.querySelector('.table-control-btn-back').style.display = 'block'
+        };
       });
-    });
+    }
+
+
 
     if (account.transactions.length === 0) {
       document.querySelector('.acc__container-control').style.display = 'none';
@@ -705,6 +731,8 @@ export function createGraph(id, array, mon, flag = false) {
     data: data,
     options: {
       scaleStepWidth: 500000,
+      responsive: true,
+      maintainAspectRatio: false,
       scaleStartValue: 0,
       responsive: true,
       scales: {
@@ -716,6 +744,7 @@ export function createGraph(id, array, mon, flag = false) {
         }
       }
     },
+
   };
 
   const myChart = new Chart(

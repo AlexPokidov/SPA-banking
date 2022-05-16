@@ -239,7 +239,9 @@ export function postTransaction(id, token) {
           num.value = '';
           value.value = '';
           form.querySelector('.btn').disabled = true;
-          document.querySelector('.form-transfer-errors').append('Перевод успешно выполнен');
+          if (!document.querySelector('.form-transfer-errors').classList.contains('not-error')) {
+            document.querySelector('.form-transfer-errors').append('Перевод успешно выполнен');
+          }
           document.querySelector('.form-transfer-errors').classList.add('not-error');
           setTimeout(() => {
             document.querySelector('.form-transfer-errors').textContent = '';
@@ -318,8 +320,11 @@ export function postCurrencyExchange(token) {
         if (res.payload) {
           value.value = '';
           createElListCurrency(res.payload, 'obj');
-          document.querySelector('.currency-trade-error').append('Перевод успешно выполнен');
+          if (!document.querySelector('.currency-trade-error').classList.contains('not-error')) {
+            document.querySelector('.currency-trade-error').append('Перевод успешно выполнен');
+          }
           document.querySelector('.currency-trade-error').classList.add('not-error');
+          document.querySelector('.currency-trade__btn').disabled = true;
           setTimeout(() => {
             document.querySelector('.currency-trade-error').textContent = '';
             document.querySelector('.currency-trade-error').classList.remove('not-error');
