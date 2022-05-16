@@ -379,9 +379,17 @@ export function createElementAccPage(account = null, status = false) {
   });
 
   document.querySelector('.list-num-tranc').addEventListener('click', i => {
-    console.log(i.target.classList.value)
+    const num = document.querySelector('.form-transfer__input-num');
+    const value = document.querySelector('.form-transfer__input-value');
+    const btn = document.querySelector('.from-transfer__btn');
     if(i.target.classList.value === ' list-num-tranc__item') {
-      document.querySelector('.form-transfer__input-num').value = i.target.textContent
+      num.value = i.target.textContent;
+
+      if(num.value && value.value) {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
     }
   })
 }
